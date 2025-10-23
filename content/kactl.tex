@@ -1,5 +1,32 @@
 \documentclass[9pt, a4paper, notitlepage]{extreport}
-\usepackage{kactlpkg}
+\usepackage{content/tex/kactlpkg}
+
+% --- Overleaf-safe KACTL import (no shell-escape) -----------------
+\usepackage{listings}
+
+% KACTL often uses "rawcpp"; make it an alias of C++
+\lstdefinelanguage{rawcpp}[]{C++}{}
+
+\makeatletter
+% 1) Keep the original \kactlchapter, but also remember the folder name
+\let\kactl@origchapter\kactlchapter
+\newcommand\kactl@dir{}%
+\renewcommand{\kactlchapter}[1]{%
+  \edef\kactl@dir{#1}%  <-- store the actual string (no doubled #)
+  \kactl@origchapter{#1}%
+}
+
+% 2) Make \kactlimport a plain listings include from content/<dir>/<file>
+\renewcommand{\kactlimport}[2][]{%
+  \lstinputlisting[
+    breaklines=true,
+    basicstyle=\ttfamily\small,
+    #1
+  ]{content/\kactl@dir/#2}%
+}
+\makeatother
+% -------------------------------------------------------------------
+
 \kactlcontentdir{content}
 
 \university{KTH}{KTH Royal Institute of Technology}{kth}
@@ -9,7 +36,6 @@
 % \enablecolors
 
 \begin{document}
-	\maketeampage
 	% Small KACTL header on the first page:
 	% \maketitle{``One Last Time'' Edition}{\today}
 	\begin{multicols*}{3}
